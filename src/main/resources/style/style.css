@@ -1,6 +1,6 @@
 /* 全局按钮样式 */
 .button {
-    -fx-background-color: #4CAF50;  /* 按钮颜色（绿色） */
+    -fx-background-color: #4c87af;  /* 按钮颜色（绿色） */
     -fx-text-fill: white;           /* 文字颜色 */
     -fx-font-size: 14px;            /* 字体大小 */
     -fx-background-radius: 5px;     /* 圆角 */
@@ -12,15 +12,15 @@
 
 /* 鼠标悬浮效果 */
 .button:hover {
-    -fx-background-color: #45a049;
+    -fx-background-color: #6191af;
 }
 
 /* 按下按钮的效果 */
 .button:pressed {
-    -fx-background-color: #3e8e41;
+    -fx-background-color: #367cb6;
 }
 
-/* 禁用窗口背景色（如果需要） */
-.root {
-    -fx-background-color: #F5F5F5;
-}
+/*!* 禁用窗口背景色 *!*/
+/*.root {*/
+/*    -fx-background-color: #ffffff;*/
+/*}*/
