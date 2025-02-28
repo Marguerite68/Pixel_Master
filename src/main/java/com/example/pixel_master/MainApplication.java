@@ -4,15 +4,24 @@ import javafx.application.Application;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.util.Arrays;
 
 public class MainApplication extends Application {
     private Label pgmInfoLabel = new Label("欢迎来到 Pixel Master，请选择一个文件夹");
@@ -20,8 +29,10 @@ public class MainApplication extends Application {
     private final Label versionLabel = new Label("Version: 0.1.3 beta");
     private final Image diskIcon = new Image("file:src/main/resources/image/disk.png"); // 磁盘图标
     private final Image folderIcon = new Image("file:src/main/resources/image/folder.png"); // 文件夹图标
-    private final Image imageIcon = new Image("file:src/main/resources/image/image.png"); // 图片图标
+    private final Image imageIcon = new Image("file:src/main/resources/image/pic.png"); // 图片图标
     private final Image PCIcon = new Image("file:src/main/resources/image/PC.png"); // 电脑图标
+
+   private final ScrollPane imageScrollPane = new ScrollPane(createImagePreviewPane()); // 图片预览区
 
     /**
      *  pgmInfoLabel:   显示当前选中目录的路径,程序运行状态等信息
@@ -33,7 +44,7 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage stage) {
         stage.getIcons().add(new Image("file:src/main/resources/image/Pixel Master icon.png")); // 设置窗口图标
-        stage.setResizable(false); // 禁用窗口缩放
+        stage.setResizable(true); // 禁用窗口缩放
 
         Pane root = new Pane();
 
@@ -42,7 +53,7 @@ public class MainApplication extends Application {
         directoryTree.setPrefWidth(265);
         directoryTree.setPrefHeight(600);
 
-        ScrollPane imageScrollPane = new ScrollPane(createImagePreviewPane()); // 图片预览区
+
         imageScrollPane.setPrefSize(930, 600);
 
         HBox controlPanel = createControlPanel(); // 操作按钮区
@@ -115,16 +126,20 @@ public class MainApplication extends Application {
             if (newItem != null) {
                 File file = (File) newItem.getGraphic().getUserData();
                 pgmInfoLabel.setText("当前选中目录：" + (file != null ? file.getAbsolutePath() : newItem.getValue()));
+                loadImages(newItem);
             }
         });
 
         return treeView;
     }
 
+
+
     /**
      * 只加载当前文件夹下的一级子文件夹，并排除 $RECYCLE.BIN
      */
     private void addSubdirectories(TreeItem<String> parentItem, File folder) {
+
         File[] files = folder.listFiles(file -> file.isDirectory() && !file.getName().equalsIgnoreCase("$RECYCLE.BIN"));
         if (files != null) {
             for (File file : files) {
@@ -142,7 +157,12 @@ public class MainApplication extends Application {
                 });
             }
         }
+
+
+
     }
+
+
 
     /**
      * 创建一个带有图标的 TreeItem，并确保图标在名称前面
@@ -205,6 +225,9 @@ public class MainApplication extends Application {
                     @Override
                     protected Void call() {
                         File[] subDirs = parentFolder.listFiles(file -> file.isDirectory() && !file.getName().equalsIgnoreCase("$RECYCLE.BIN"));
+
+
+
                         if (subDirs == null) return null;
 
                         Platform.runLater(() -> {
@@ -224,6 +247,11 @@ public class MainApplication extends Application {
                                 });
                             }
                         });
+
+                       /* Platform.runLater(() -> {
+                            loadImages(parentItem);
+                        });*/
+
                         return null;
                     }
                 };
@@ -233,6 +261,75 @@ public class MainApplication extends Application {
         service.start();
     }
 
+
+
+    private void loadImages(TreeItem<String> parentItem) {
+        File parentFolder = (File) parentItem.getGraphic().getUserData();
+        File[] images = parentFolder.listFiles(file -> file.isFile() && isImageFile(file));
+        //System.out.println(parentItem.getValue()+" "+images.length);
+
+        // 清空 imageScrollPane 的内容
+        imageScrollPane.setContent(null);
+
+        // 创建 FlowPane 来放置图片和文件名
+        FlowPane flowPane = new FlowPane();
+        flowPane.setHgap(15);
+        flowPane.setVgap(15);
+        flowPane.setPrefWrapLength(900); // 设置每行的宽度
+
+        // 将图片和文件名添加到 FlowPane 中
+        for (File image : images) {
+            try {
+                // 创建一个占位符 ImageView
+                ImageView imageView = new ImageView();
+                imageView.setFitWidth(100);
+                imageView.setFitHeight(100);
+
+                // 异步加载图片
+                Image fullImage = new Image(image.toURI().toString(), true);
+                fullImage.progressProperty().addListener((observable, oldValue, newValue) -> {
+                    if (newValue.doubleValue() == 1.0) {
+                        // 图片加载完成，设置缩略图
+                        imageView.setImage(createThumbnail(fullImage, 100, 100));
+                    }
+                });
+
+                Label nameLabel = new Label(image.getName());
+                nameLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: black;");
+
+                VBox vbox = new VBox(imageView, nameLabel);
+                vbox.setAlignment(Pos.CENTER);
+                vbox.setOnMouseClicked(event -> {
+                    System.out.println("Clicked on " + image.getName());
+                });
+                vbox.setOnMouseEntered(event -> {
+                    vbox.setStyle("-fx-border-color: rgb(0,247,253); -fx-border-width: 2px;");
+                });
+
+                vbox.setOnMouseExited(event -> {
+                    vbox.setStyle("-fx-border-color: transparent;");
+                });
+
+                flowPane.getChildren().add(vbox);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        // 将 FlowPane 设置为 imageScrollPane 的内容
+        imageScrollPane.setContent(flowPane);
+    }
+
+    private Image createThumbnail(Image source, int width, int height) {
+        ImageView imageView = new ImageView(source);
+        imageView.setFitWidth(width);
+        imageView.setFitHeight(height);
+        imageView.setPreserveRatio(true);
+        SnapshotParameters parameters = new SnapshotParameters();
+        parameters.setFill(Color.TRANSPARENT);
+        WritableImage writableImage = imageView.snapshot(parameters, null);
+        return writableImage;
+    }
 
 
 
