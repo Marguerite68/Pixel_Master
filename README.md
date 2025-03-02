@@ -1,7 +1,3 @@
-Here is a draft for the README of your repository:
-
----
-
 # Pixel Master
 
 A course design related to image management which is currently under construction.
