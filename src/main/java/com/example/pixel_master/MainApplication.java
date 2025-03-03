@@ -4,24 +4,18 @@ import javafx.application.Application;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.WritableImage;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.util.Arrays;
 
 public class MainApplication extends Application {
     private Label pgmInfoLabel = new Label("欢迎来到 Pixel Master，请选择一个文件夹");
@@ -32,7 +26,7 @@ public class MainApplication extends Application {
     private final Image imageIcon = new Image("file:src/main/resources/image/pic.png"); // 图片图标
     private final Image PCIcon = new Image("file:src/main/resources/image/PC.png"); // 电脑图标
 
-   private final ScrollPane imageScrollPane = new ScrollPane(createImagePreviewPane()); // 图片预览区
+    private final ScrollPane imageScrollPane = new ScrollPane(); // 图片预览区
 
     /**
      *  pgmInfoLabel:   显示当前选中目录的路径,程序运行状态等信息
@@ -125,6 +119,7 @@ public class MainApplication extends Application {
         treeView.getSelectionModel().selectedItemProperty().addListener((obs, oldItem, newItem) -> {
             if (newItem != null) {
                 File file = (File) newItem.getGraphic().getUserData();
+                fileInfoLabel.setText("当前未选中图片");
                 pgmInfoLabel.setText("当前选中目录：" + (file != null ? file.getAbsolutePath() : newItem.getValue()));
                 loadImages(newItem);
             }
@@ -266,81 +261,103 @@ public class MainApplication extends Application {
     private void loadImages(TreeItem<String> parentItem) {
         File parentFolder = (File) parentItem.getGraphic().getUserData();
         File[] images = parentFolder.listFiles(file -> file.isFile() && isImageFile(file));
-        //System.out.println(parentItem.getValue()+" "+images.length);
 
         // 清空 imageScrollPane 的内容
         imageScrollPane.setContent(null);
 
-        // 创建 FlowPane 来放置图片和文件名
-        FlowPane flowPane = new FlowPane();
-        flowPane.setHgap(15);
-        flowPane.setVgap(15);
-        flowPane.setPrefWrapLength(900); // 设置每行的宽度
+        // 整齐排列图片
+        TilePane tilePane = new TilePane();
+        tilePane.setHgap(15);  // 图片间距
+        tilePane.setVgap(15);
+        tilePane.setPrefColumns(5); // 每行5个图片
+        tilePane.setAlignment(Pos.TOP_LEFT); // 从左上角开始排列
 
-        // 将图片和文件名添加到 FlowPane 中
         for (File image : images) {
             try {
-                // 创建一个占位符 ImageView
-                ImageView imageView = new ImageView();
-                imageView.setFitWidth(100);
-                imageView.setFitHeight(100);
-
-                // 异步加载图片
+                // 创建 ImageView（150*150px保持原始比例的缩略图）
                 Image fullImage = new Image(image.toURI().toString(), true);
+                ImageView imageView = new ImageView();
+                imageView.setFitWidth(150);
+                imageView.setFitHeight(150);
+                imageView.setPreserveRatio(true);
+
                 fullImage.progressProperty().addListener((observable, oldValue, newValue) -> {
                     if (newValue.doubleValue() == 1.0) {
-                        // 图片加载完成，设置缩略图
-                        imageView.setImage(createThumbnail(fullImage, 100, 100));
+                        imageView.setImage(createThumbnail(fullImage));
                     }
                 });
 
-                Label nameLabel = new Label(image.getName());
+                // 处理文件名
+                String fullFileName = image.getName();
+                Label nameLabel = new Label(truncateFileName(fullFileName, 20));
                 nameLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: black;");
+                nameLabel.setWrapText(true);
+                nameLabel.setMaxWidth(150);
+                nameLabel.setAlignment(Pos.CENTER);
+                nameLabel.setTextOverrun(OverrunStyle.ELLIPSIS);
+                nameLabel.setPrefHeight(35); // 限制最大高度，最多两行
 
+                // 组合图片和名称
                 VBox vbox = new VBox(imageView, nameLabel);
                 vbox.setAlignment(Pos.CENTER);
+                vbox.setSpacing(5);
+                vbox.setPadding(new Insets(5));
+                vbox.setStyle("-fx-border-color: transparent; -fx-border-width: 2px;");
+
+                // 鼠标点击效果
                 vbox.setOnMouseClicked(event -> {
-                    System.out.println("Clicked on " + image.getName());
-                });
-                vbox.setOnMouseEntered(event -> {
-                    vbox.setStyle("-fx-border-color: rgb(0,247,253); -fx-border-width: 2px;");
-                });
-
-                vbox.setOnMouseExited(event -> {
-                    vbox.setStyle("-fx-border-color: transparent;");
+                    pgmInfoLabel.setText("选中的图片：" + fullFileName);
+                    float size = (float) image.length() / (1024 * 1024);
+                    fileInfoLabel.setText(String.format("当前选中的图片大小：%.2f MB", size) + " (" + (image.length() / 1024) + " KB)");
                 });
 
-                flowPane.getChildren().add(vbox);
+                vbox.setOnMouseEntered(event -> vbox.setStyle("-fx-border-color: rgb(97,145,175); -fx-border-width: 2px;"));
+                vbox.setOnMouseExited(event -> vbox.setStyle("-fx-border-color: transparent;"));
+
+                tilePane.getChildren().add(vbox);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
-        // 将 FlowPane 设置为 imageScrollPane 的内容
-        imageScrollPane.setContent(flowPane);
+        imageScrollPane.setContent(tilePane);
     }
 
-    private Image createThumbnail(Image source, int width, int height) {
+
+
+    /**
+     * 生成缩略图，保持原始比例，避免拉伸
+     */
+    private Image createThumbnail(Image source) {
+        double originalWidth = source.getWidth();
+        double originalHeight = source.getHeight();
+
+        // 计算等比例缩放
+        double scale = Math.min(150 / originalWidth, 150 / originalHeight);
+        double targetWidth = originalWidth * scale;
+        double targetHeight = originalHeight * scale;
+
         ImageView imageView = new ImageView(source);
-        imageView.setFitWidth(width);
-        imageView.setFitHeight(height);
+        imageView.setFitWidth(targetWidth);
+        imageView.setFitHeight(targetHeight);
         imageView.setPreserveRatio(true);
+
         SnapshotParameters parameters = new SnapshotParameters();
         parameters.setFill(Color.TRANSPARENT);
-        WritableImage writableImage = imageView.snapshot(parameters, null);
-        return writableImage;
+        return imageView.snapshot(parameters, null);
+    }
+
+    /**
+     * 处理超长文件名，最多显示两行，超出部分用 "..." 省略
+     */
+    private String truncateFileName(String fileName, int maxLength) {
+        if (fileName.length() <= maxLength) {
+            return fileName;
+        }
+        return fileName.substring(0, maxLength - 3) + "...";
     }
 
 
-
-
-
-    //----------创建图片预览区域----------
-    private Pane createImagePreviewPane() {
-        Pane flowPane = new Pane();
-        //TODO从当前选中目录提取图片文件，显示在右侧区域
-        return flowPane;
-    }
 
 
     //----------创建右键菜单(Untested)----------
