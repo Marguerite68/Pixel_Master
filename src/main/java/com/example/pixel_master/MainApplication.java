@@ -20,7 +20,7 @@ import java.io.File;
 public class MainApplication extends Application {
     private Label pgmInfoLabel = new Label("欢迎来到 Pixel Master，请选择一个文件夹");
     private Label fileInfoLabel = new Label("当前未选中图片");
-    private final Label versionLabel = new Label("Version: 0.1.3 beta");
+    private final Label versionLabel = new Label("Version: 0.1.5 beta");
     private final Image diskIcon = new Image("file:src/main/resources/image/disk.png"); // 磁盘图标
     private final Image folderIcon = new Image("file:src/main/resources/image/folder.png"); // 文件夹图标
     private final Image imageIcon = new Image("file:src/main/resources/image/pic.png"); // 图片图标
