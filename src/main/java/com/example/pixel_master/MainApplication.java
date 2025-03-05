@@ -262,19 +262,31 @@ public class MainApplication extends Application {
         File parentFolder = (File) parentItem.getGraphic().getUserData();
         File[] images = parentFolder.listFiles(file -> file.isFile() && isImageFile(file));
 
-        // 清空 imageScrollPane 的内容
+        // 清空 imageScrollPane 原有的内容
         imageScrollPane.setContent(null);
 
-        // 整齐排列图片
+        // 路径下没有图片的提示信息
+        if (images == null || images.length == 0) {
+            Label noImagesLabel = new Label("当前路径下没有可供预览的图片");
+            noImagesLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: gray;");
+            noImagesLabel.setAlignment(Pos.CENTER);
+
+            StackPane stackPane = new StackPane(noImagesLabel);
+            stackPane.setPrefSize(900, 600);
+            imageScrollPane.setContent(stackPane);
+            return;
+        }
+
+        // 创建 TilePane 并整齐排列图片
         TilePane tilePane = new TilePane();
         tilePane.setHgap(15);  // 图片间距
         tilePane.setVgap(15);
-        tilePane.setPrefColumns(5); // 每行5个图片
-        tilePane.setAlignment(Pos.TOP_LEFT); // 从左上角开始排列
+        tilePane.setPrefColumns(5); // 每行最多 5 个图片
+        tilePane.setAlignment(Pos.TOP_LEFT);
 
         for (File image : images) {
             try {
-                // 创建 ImageView（150*150px保持原始比例的缩略图）
+                // 创建 ImageView（150*150px 但保持原始比例）
                 Image fullImage = new Image(image.toURI().toString(), true);
                 ImageView imageView = new ImageView();
                 imageView.setFitWidth(150);
@@ -322,6 +334,7 @@ public class MainApplication extends Application {
 
         imageScrollPane.setContent(tilePane);
     }
+
 
 
 
