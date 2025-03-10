@@ -15,7 +15,7 @@ Pixel Master is a Java-based application designed for managing and manipulating 
 
 ### Prerequisites
 
-- Java Development Kit (JDK) 17 or higher
+- Java Development Kit (JDK) 21 or higher
 - Maven
 
 ### Installation
@@ -61,4 +61,3 @@ For any inquiries or support, please contact [Marguerite68](https://github.com/M
 
 ---
 
-Feel free to modify and expand this draft to better fit your project's needs.
