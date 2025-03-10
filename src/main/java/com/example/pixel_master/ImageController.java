@@ -219,20 +219,29 @@ public class ImageController {
             alert.setTitle("信息");
             alert.setHeaderText(null);
             alert.setContentText("没有选中任何文件");
-
             alert.showAndWait();
         } else {
-            selectedImages.forEach(vbox -> {
-                File imageFile = (File) vbox.getUserData();
-                if (imageFile != null && imageFile.delete()) {
-                    System.out.println("已删除文件: " + imageFile.getName());
-                } else {
-                    System.out.println("删除文件失败: " + imageFile.getName());
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setContentText("确定要删除选中的图片吗？");
+            alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+            alert.setOnCloseRequest(event -> {
+                if (alert.getResult() == ButtonType.YES) {
+                    // 处理删除操作
+                    selectedImages.forEach(vbox -> {
+                        File imageFile = (File) vbox.getUserData();
+                        if (imageFile != null && imageFile.delete()) {
+                            System.out.println("已删除文件: " + imageFile.getName());
+                        } else {
+                            System.out.println("删除文件失败: " + imageFile.getName());
+                        }
+                    });
+                    selectedImages.clear();
+                    updateFileInfoLabel();
+                    loadImages(this.Folder);
+
                 }
             });
-            selectedImages.clear();
-            updateFileInfoLabel();
-            loadImages(this.Folder);
+            alert.showAndWait();
         }
     }
 
