@@ -11,8 +11,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.text.Text;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -24,6 +28,8 @@ public class ImageController {
     private Label pgmInfoLabel;
     private static Set<VBox> selectedImages = new HashSet<>();
 
+    private static Set<VBox> copyImages = new HashSet<>();
+
     private static File Folder;
 
 
@@ -33,6 +39,7 @@ public class ImageController {
         this.fileInfoLabel = fileInfoLabel;
         this.pgmInfoLabel = pgmInfoLabel;
     }
+
 
     public void loadImages(File parentFolder) {
         this.Folder = parentFolder;
@@ -107,11 +114,30 @@ public class ImageController {
                     }
                 });
 
+
                 tilePane.getChildren().add(vbox);
+
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+
+        imageScrollPane.setOnMouseClicked(event -> {
+            System.out.println(event.getTarget());
+            // 检查点击位置
+            if (event.getTarget() instanceof ImageView || event.getTarget() instanceof Text || event.getTarget() instanceof Label || event.getTarget() instanceof VBox) {
+               return;
+            }
+            else {
+                // 取消所有选中状态
+                for (VBox vbox1 : selectedImages) {
+                    vbox1.setStyle("-fx-border-color: transparent;");
+                }
+                selectedImages.clear();
+                updateFileInfoLabel();
+            }
+        });
 
         imageScrollPane.setContent(tilePane);
     }
@@ -162,16 +188,102 @@ public class ImageController {
     // 添加方法来处理按钮点击事件
 
     public void handleCopyButton() {
-        System.out.println("点击了复制按钮");
+        if (selectedImages.size() <= 0) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("提示");
+            alert.setHeaderText(null);
+            alert.setContentText("没有选中任何文件");
+            alert.showAndWait();
+        }
+        else {
+            copyImages.clear();
+            copyImages.addAll(selectedImages);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setHeaderText(null);
+            alert.setContentText("图片已复制");
+            alert.showAndWait();
+            /*copyImages.forEach(vbox -> {
+                System.out.println(vbox.getUserData());
+            });*/
+        }
     }
 
     public void handlePasteButton() {
-        System.out.println("点击了粘贴按钮");
+        if (copyImages.size() <= 0) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("提示");
+            alert.setHeaderText(null);
+            alert.setContentText("没有可粘贴的文件");
+            alert.showAndWait();
+        }
+        else{
+            for (VBox vbox : copyImages) {
+                File sourceFile = (File) vbox.getUserData();
+                if (sourceFile != null) {
+                    String fileName = sourceFile.getName().split("\\.")[0];
+                    String suffix= sourceFile.getName().split("\\.")[1];
+                    String targetName=sourceFile.getName();
+                    if(new File(Folder,sourceFile.getName()).exists())
+                    {
+                        targetName = fileName + " - 副本" + "." + suffix;
+                    }
+
+                    File targetFile = new File(Folder, targetName);
+                    try {
+                        Files.copy(sourceFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        System.out.println("已粘贴文件: " + targetFile.getName());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("错误");
+                        alert.setHeaderText(null);
+                        alert.setContentText("粘贴文件 " + sourceFile.getName() + " 时出错");
+                        alert.showAndWait();
+                    }
+                }
+            }
+            // 刷新图片列表
+            loadImages(Folder);
+        }
     }
 
     public void handleSlideModeButton() {
         System.out.println("点击了幻灯片按钮");
     }
+
+    public void handleDeleteButton() {
+
+        if (selectedImages.size() <= 0) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("信息");
+            alert.setHeaderText(null);
+            alert.setContentText("没有选中任何文件");
+            alert.showAndWait();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setContentText("确定要删除选中的图片吗？");
+            alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+            alert.setOnCloseRequest(event -> {
+                if (alert.getResult() == ButtonType.YES) {
+                    // 处理删除操作
+                    selectedImages.forEach(vbox -> {
+                        File imageFile = (File) vbox.getUserData();
+                        if (imageFile != null && imageFile.delete()) {
+                            System.out.println("已删除文件: " + imageFile.getName());
+                        } else {
+                            System.out.println("删除文件失败: " + imageFile.getName());
+                        }
+                    });
+                    selectedImages.clear();
+                    updateFileInfoLabel();
+                    loadImages(this.Folder);
+
+                }
+            });
+            alert.showAndWait();
+        }
+    }
+
 
     // 提供方法来设置按钮的事件处理程序
     public void setButtonActions(Button deleteButton, Button copyButton, Button pasteButton, Button slideModeButton) {
@@ -212,38 +324,6 @@ public class ImageController {
         }
     }
 
-    public void handleDeleteButton() {
-
-        if (selectedImages.size() <= 0) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("信息");
-            alert.setHeaderText(null);
-            alert.setContentText("没有选中任何文件");
-            alert.showAndWait();
-        } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setContentText("确定要删除选中的图片吗？");
-            alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
-            alert.setOnCloseRequest(event -> {
-                if (alert.getResult() == ButtonType.YES) {
-                    // 处理删除操作
-                    selectedImages.forEach(vbox -> {
-                        File imageFile = (File) vbox.getUserData();
-                        if (imageFile != null && imageFile.delete()) {
-                            System.out.println("已删除文件: " + imageFile.getName());
-                        } else {
-                            System.out.println("删除文件失败: " + imageFile.getName());
-                        }
-                    });
-                    selectedImages.clear();
-                    updateFileInfoLabel();
-                    loadImages(this.Folder);
-
-                }
-            });
-            alert.showAndWait();
-        }
-    }
 
     // 获取选中的图片
     public static Set<VBox> getSelectedImages() {
