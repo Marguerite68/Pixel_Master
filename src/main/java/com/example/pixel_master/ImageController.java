@@ -3,12 +3,10 @@ package com.example.pixel_master;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.text.Text;
@@ -17,8 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -284,13 +280,143 @@ public class ImageController {
         }
     }
 
+    public void handleRenameButton() {
+        if(selectedImages.size()==1)
+        {
+            // 获取选中的图片文件
+            VBox selectedVBox = selectedImages.iterator().next();
+            File imageFile = (File) selectedVBox.getUserData();
+
+            // 创建一个对话框，提示用户输入新的文件名
+            TextInputDialog dialog = new TextInputDialog(imageFile.getName().split("\\.")[0]);
+            dialog.setTitle("重命名");
+            dialog.setHeaderText(null);
+            dialog.setContentText("请输入新的文件名:");
+
+            // 显示对话框并等待用户输入
+            dialog.showAndWait().ifPresent(newFileName -> {
+                if (!newFileName.isEmpty()) {
+                    // 获取文件的原始扩展名
+                    String suffix=imageFile.getName().split("\\.")[1];
+
+                    // 构建新的文件名
+                    String newFileNameWithExtension = newFileName + "." + suffix;
+
+                    // 创建新的文件对象
+                    File newFile = new File(imageFile.getParent(), newFileNameWithExtension);
+
+                    // 重命名文件
+                    try {
+                        Files.move(imageFile.toPath(), newFile.toPath());
+                        // 更新VBox的userData为新的文件对象
+                        selectedVBox.setUserData(newFile);
+                    } catch (IOException e) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        System.out.println(e.getMessage());
+                        alert.setTitle("错误");
+                        alert.setHeaderText(null);
+                        alert.setContentText("重命名文件 " + imageFile.getName() + " 失败: " + e.getMessage());
+                        alert.showAndWait();
+                    }
+
+                }
+                selectedImages.clear();
+                updateFileInfoLabel();
+                loadImages(Folder);
+            });
+        } else if (selectedImages.size() >= 2) {
+            // 创建一个对话框，提示用户输入名称前缀、起名编号和编号位数
+            Dialog<RenameParam> dialog = new Dialog<>();
+            dialog.setTitle("批量重命名");
+            dialog.setHeaderText(null);
+            dialog.setContentText("请输入批量重命名的参数:");
+
+            // 设置对话框的输入控件
+            GridPane grid = new GridPane();
+            grid.setHgap(10);
+            grid.setVgap(10);
+            grid.setPadding(new Insets(20, 150, 10, 10));
+
+            TextField prefixField = new TextField();
+            prefixField.setPromptText("名称前缀");
+            TextField startNumberField = new TextField();
+            startNumberField.setPromptText("起名编号");
+            TextField numberDigitsField = new TextField();
+            numberDigitsField.setPromptText("编号位数");
+
+            grid.add(new Label("名称前缀:"), 0, 0);
+            grid.add(prefixField, 1, 0);
+            grid.add(new Label("起名编号:"), 0, 1);
+            grid.add(startNumberField, 1, 1);
+            grid.add(new Label("编号位数:"), 0, 2);
+            grid.add(numberDigitsField, 1, 2);
+
+            dialog.getDialogPane().setContent(grid);
+
+            // 设置对话框的按钮
+            ButtonType renameButtonType = new ButtonType("重命名", ButtonBar.ButtonData.OK_DONE);
+            dialog.getDialogPane().getButtonTypes().addAll(renameButtonType, ButtonType.CANCEL);
+
+            // 设置对话框的结果转换器
+            dialog.setResultConverter(dialogButton -> {
+                if (dialogButton == renameButtonType) {
+                    String prefix = prefixField.getText();
+                    int startNumber = Integer.parseInt(startNumberField.getText());
+                    int numberDigits = Integer.parseInt(numberDigitsField.getText());
+                    return new RenameParam(prefix, startNumber, numberDigits);
+                }
+                return null;
+            });
+
+            // 显示对话框并等待用户输入
+            dialog.showAndWait().ifPresent(params -> {
+                int count = 1;
+                if((String.valueOf(params.startNumber+selectedImages.size()).length()>params.numberDigits))
+                {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("错误");
+                    alert.setHeaderText(null);
+                    alert.setContentText("重命名文件失败");
+                    alert.showAndWait();
+                    return ;
+                }
+
+                for (VBox selectedVBox : selectedImages) {
+                    File imageFile = (File) selectedVBox.getUserData();
+                    String suffix = imageFile.getName().split("\\.")[1];
+                    String newFileName = String.format("%s%0" + params.numberDigits + "d.%s", params.prefix, params.startNumber + count - 1, suffix);
+                    File newFile = new File(imageFile.getParent(), newFileName);
+                    // 重命名文件
+                    try {
+                        Files.move(imageFile.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        // 更新VBox的userData为新的文件对象
+                        selectedVBox.setUserData(newFile);
+                    } catch (Exception e) {
+
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        System.out.println(e.getMessage());
+                        alert.setTitle("错误");
+                        alert.setHeaderText(null);
+                        alert.setContentText("重命名文件 " + imageFile.getName() + " 失败: " + e.getMessage());
+                        alert.showAndWait();
+                    }
+                    count++;
+                }
+                selectedImages.clear();
+                updateFileInfoLabel();
+                // 刷新图片列表
+                loadImages(Folder);
+            });
+        }
+    }
 
     // 提供方法来设置按钮的事件处理程序
-    public void setButtonActions(Button deleteButton, Button copyButton, Button pasteButton, Button slideModeButton) {
+    public void setButtonActions(Button deleteButton, Button copyButton, Button pasteButton, Button slideModeButton,Button renameButton) {
         deleteButton.setOnAction(e -> handleDeleteButton());
         copyButton.setOnAction(e -> handleCopyButton());
         pasteButton.setOnAction(e -> handlePasteButton());
         slideModeButton.setOnAction(e -> handleSlideModeButton());
+        renameButton.setOnAction(e -> handleRenameButton());
     }
 
     // 处理单选
@@ -330,3 +456,5 @@ public class ImageController {
         return selectedImages;
     }
 }
+
+// 添加一个内部类来存储重命名参数

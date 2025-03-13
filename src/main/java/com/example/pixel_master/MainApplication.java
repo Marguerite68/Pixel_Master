@@ -77,12 +77,13 @@ public class MainApplication extends Application {
         Button deleteButton = new Button("删除");
         Button copyButton = new Button("复制");
         Button pasteButton = new Button("粘贴");
+        Button renameButton = new Button("重命名");
         Button slideModeButton = new Button("幻灯片");
 
         // 使用 ImageController 来设置按钮的事件处理程序
-        imageController.setButtonActions(deleteButton, copyButton, pasteButton, slideModeButton);
+        imageController.setButtonActions(deleteButton, copyButton, pasteButton, slideModeButton, renameButton);
 
-        return new HBox(10, deleteButton, copyButton, pasteButton, slideModeButton);
+        return new HBox(10, deleteButton, copyButton, pasteButton, slideModeButton,renameButton);
     }
 
     public static void main(String[] args) {
