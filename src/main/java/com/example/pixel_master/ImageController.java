@@ -243,10 +243,6 @@ public class ImageController {
         }
     }
 
-    public void handleSlideModeButton() {
-        System.out.println("点击了幻灯片按钮");
-    }
-
     public void handleDeleteButton() {
 
         if (selectedImages.size() <= 0) {
@@ -415,7 +411,6 @@ public class ImageController {
         deleteButton.setOnAction(e -> handleDeleteButton());
         copyButton.setOnAction(e -> handleCopyButton());
         pasteButton.setOnAction(e -> handlePasteButton());
-        slideModeButton.setOnAction(e -> handleSlideModeButton());
         renameButton.setOnAction(e -> handleRenameButton());
     }
 
@@ -451,10 +446,9 @@ public class ImageController {
     }
 
 
-    // 获取选中的图片
+    // 获取选中的图片,用于幻灯片播放
     public static Set<VBox> getSelectedImages() {
         return selectedImages;
     }
 }
 
-// 添加一个内部类来存储重命名参数

@@ -18,14 +18,14 @@ public class MainApplication extends Application {
 
 
     @Override
-    /**
-     * 设置主舞台并初始化UI组件。
+    /*
+      设置主舞台并初始化UI组件。
      */
     public void start(Stage stage) {
         // 设置应用程序图标
         stage.getIcons().add(new Image("file:src/main/resources/image/Pixel Master icon.png"));
-        // 允许窗口调整大小
-        stage.setResizable(true);
+        // 禁用窗口缩放
+        stage.setResizable(false);
 
         // 创建根面板
         Pane root = new Pane();
@@ -88,14 +88,17 @@ public class MainApplication extends Application {
         Button copyButton = new Button("复制");
         Button pasteButton = new Button("粘贴");
         Button renameButton = new Button("重命名");
-        Button slideModeButton = new Button("幻灯片");//TODO：点击此按钮开启幻灯片模式，可能会要求选择间隔时间
+        Button slideModeButton = new Button("幻灯片");
 
-        // 使用 ImageController 来设置按钮的事件处理程序
+        //点击slideModeButton后直接调用SlideMode的静态方法创建实例
+        slideModeButton.setOnAction(event -> SlideMode.showSlideIntervalDialog());
+
+        //其他按钮的点击事件在ImageController中处理
         imageController.setButtonActions(deleteButton, copyButton, pasteButton, slideModeButton, renameButton);
 
-        //所有的按钮都要添加在HBox中才会显示生效
-        return new HBox(10, deleteButton, copyButton, pasteButton, slideModeButton,renameButton);
+        return new HBox(10, deleteButton, copyButton, pasteButton, slideModeButton, renameButton);
     }
+
 
     public static void main(String[] args) {
         launch();
