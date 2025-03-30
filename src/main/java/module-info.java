@@ -6,6 +6,7 @@ module com.example.pixel_master {
     requires org.controlsfx.controls;
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.bootstrapfx.core;
+    requires java.desktop;
     //requires eu.hansolo.tilesfx;
 
     opens com.example.pixel_master to javafx.fxml;

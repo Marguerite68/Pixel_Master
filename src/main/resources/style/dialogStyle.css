@@ -1,0 +1,45 @@
+/* 设置窗口内的主要文本 */
+.dialog-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+/* 输入框样式 */
+.dialog-input {
+    -fx-pref-width: 100px;
+    -fx-font-size: 14px;
+}
+
+/* 错误提示文本 */
+.dialog-error {
+    -fx-text-fill: red;
+    -fx-font-size: 12px;
+}
+
+/* 主要按钮（确定） */
+.dialog-button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-background-radius: 5px;
+    -fx-padding: 5px 15px;
+}
+
+/* 主要按钮悬停效果 */
+.dialog-button:hover {
+    -fx-background-color: #45a049;
+}
+
+/* 取消按钮 */
+.dialog-cancel {
+    -fx-background-color: #d9534f;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-background-radius: 5px;
+    -fx-padding: 5px 15px;
+}
+
+/* 取消按钮悬停效果 */
+.dialog-cancel:hover {
+    -fx-background-color: #c9302c;
+}
