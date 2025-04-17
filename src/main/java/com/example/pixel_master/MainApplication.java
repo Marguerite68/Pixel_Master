@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 public class MainApplication extends Application {
     private Label pgmInfoLabel = new Label("欢迎来到 Pixel Master，请选择一个文件夹");// 用于显示当前选中的目录路径
     private Label fileInfoLabel = new Label("当前未选中图片");// 用于显示选中文件的信息
-    private final Label versionLabel = new Label("Version: 0.2.4 beta");//每次提交之前记得给版本号+1，格式为：正式版本号.功能版本号.开发版本号
+    private final Label versionLabel = new Label("Version: 0.3.1 beta");//每次提交之前记得给版本号+1，格式为：正式版本号.功能版本号.开发版本号
     private final ScrollPane imageScrollPane = new ScrollPane();
 
     private TreeController treeController;
