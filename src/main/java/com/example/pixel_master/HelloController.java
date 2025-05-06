@@ -1,3 +1,4 @@
+//deprecated
 package com.example.pixel_master;
 
 import javafx.fxml.FXML;

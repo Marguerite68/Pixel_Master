@@ -37,6 +37,7 @@ public class ImageController {
     }
 
 
+    /*这个 loadImages(File parentFolder) 方法是 ImageController 类的核心方法，主要作用是加载并显示指定文件夹中的图片，并实现图片的选择交互功能。 */
     public void loadImages(File parentFolder) {
         this.Folder = parentFolder;
         File[] images = parentFolder.listFiles(file -> file.isFile() && isImageFile(file));
@@ -138,6 +139,8 @@ public class ImageController {
         imageScrollPane.setContent(tilePane);
     }
 
+
+    /*这个 updateFileInfoLabel() 方法是 ImageController 类中的一个私有方法，主要用于更新界面上的文件信息标签，显示当前选中图片的数量和总大小。 */
     private void updateFileInfoLabel() {
         double totalSize = 0.0;
         totalSize=selectedImages.stream().mapToDouble(vbox -> {
@@ -152,6 +155,7 @@ public class ImageController {
     }
 
 
+    /*这个 createThumbnail(Image source) 方法用于生成原图的缩略图，确保缩略图在保持宽高比的同时，适应指定的最大尺寸（150×150 像素）。 */
     private Image createThumbnail(Image source) {
         double originalWidth = source.getWidth();
         double originalHeight = source.getHeight();
@@ -168,6 +172,8 @@ public class ImageController {
         return imageView.snapshot(null, null);
     }
 
+
+    /* 这个 truncateFileName(String fileName, int maxLength) 方法用于截断过长的文件名，并在末尾添加省略号（...），以确保文件名在界面上显示时不会超出指定长度。*/
     private String truncateFileName(String fileName, int maxLength) {
         if (fileName.length() <= maxLength) {
             return fileName;
@@ -175,6 +181,8 @@ public class ImageController {
         return fileName.substring(0, maxLength - 3) + "...";
     }
 
+
+    /*判断是不是图片文件 */
     public boolean isImageFile(File file) {
         String fileName = file.getName().toLowerCase();
         return fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png")
