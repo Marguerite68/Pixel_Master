@@ -39,3 +39,5 @@ Pixel Master 是一个轻量级的电子图片管理软件，提供便捷的图�
 2. 在终端或命令行中运行：
    ```sh
    java -jar PixelMaster.jar
+
+This work © 2 by Marguerite68, JosephTrumpBiden, LLLRhys is licensed under CC BY-NC 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc/4.0/
