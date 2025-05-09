@@ -95,7 +95,7 @@ public class ImageController {
 
                 vbox.setOnMouseClicked(event -> {
                     if (event.isControlDown()) {
-                        toggleSelection(vbox);
+                        toggleSelect(vbox);
 
                     } else {
                         singleSelect(vbox);
@@ -440,7 +440,7 @@ public class ImageController {
         }
     }
 
-    private void toggleSelection(VBox vbox) {
+    private void toggleSelect(VBox vbox) {
 
         if (selectedImages.contains(vbox)) {
             selectedImages.remove(vbox);
