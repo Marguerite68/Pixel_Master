@@ -23,7 +23,7 @@ public class MainApplication extends Application {
      */
     public void start(Stage stage) {
         // 设置应用程序图标
-        stage.getIcons().add(new Image("file:src/main/resources/image/Pixel Master icon.png"));
+        new Image(getClass().getResource("/image/Pixel Master icon.png").toExternalForm());
         // 禁用窗口缩放
         stage.setResizable(false);
 
@@ -77,7 +77,7 @@ public class MainApplication extends Application {
 
         // 创建并设置场景
         Scene scene = new Scene(root, 1280, 720);
-        scene.getStylesheets().add("file:src/main/resources/style/style.css");
+        scene.getStylesheets().add(getClass().getResource("/style/style.css").toExternalForm());
         stage.setTitle("Pixel Master");
         stage.setScene(scene);
         stage.show();

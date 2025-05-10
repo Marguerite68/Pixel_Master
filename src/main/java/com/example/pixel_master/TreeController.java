@@ -18,9 +18,10 @@ public class TreeController {
     private Label fileInfoLabel;
     private Label pgmInfoLabel;
 
-    private final Image diskIcon = new Image("file:src/main/resources/image/disk.png");
-    private final Image folderIcon = new Image("file:src/main/resources/image/folder.png");
-    private final Image PCIcon = new Image("file:src/main/resources/image/PC.png");
+    private final Image diskIcon = new Image(getClass().getResource("/image/disk.png").toExternalForm());
+    private final Image folderIcon = new Image(getClass().getResource("/image/folder.png").toExternalForm());
+    private final Image PCIcon = new Image(getClass().getResource("/image/PC.png").toExternalForm());
+
 
     /**
      * 构造函数，初始化TreeController
