@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.io.File;
+import java.util.Objects;
 
 /**
  * TreeController类负责创建和管理目录树视图
@@ -18,9 +19,9 @@ public class TreeController {
     private Label fileInfoLabel;
     private Label pgmInfoLabel;
 
-    private final Image diskIcon = new Image(getClass().getResource("/image/disk.png").toExternalForm());
-    private final Image folderIcon = new Image(getClass().getResource("/image/folder.png").toExternalForm());
-    private final Image PCIcon = new Image(getClass().getResource("/image/PC.png").toExternalForm());
+    private final Image diskIcon = new Image(Objects.requireNonNull(getClass().getResource("/image/disk.png")).toExternalForm());
+    private final Image folderIcon = new Image(Objects.requireNonNull(getClass().getResource("/image/folder.png")).toExternalForm());
+    private final Image PCIcon = new Image(Objects.requireNonNull(getClass().getResource("/image/PC.png")).toExternalForm());
 
 
     /**
