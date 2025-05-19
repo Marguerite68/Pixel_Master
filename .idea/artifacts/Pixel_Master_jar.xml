@@ -1,7 +1,7 @@
 <component name="ArtifactManager">
-  <artifact type="javafx" build-on-make="true" name="Pixel_Master:jar">
+  <artifact type="jar" build-on-make="true" name="Pixel_Master:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/Pixel_Master_jar</output-path>
-    <root id="root">
+    <root id="archive" name="Pixel_Master.jar">
       <element id="directory" name="META-INF">
         <element id="file-copy" path="$PROJECT_DIR$/out/artifacts/Pixel_Master_jar/META-INF/MANIFEST.MF" />
       </element>
@@ -29,29 +29,6 @@
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-graphics/17.0.6/javafx-graphics-17.0.6-win.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-fxml/17.0.6/javafx-fxml-17.0.6.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/openjfx/javafx-web/17.0.6/javafx-web-17.0.6-win.jar" path-in-jar="/" />
-      <element id="library" level="project" name="Maven: eu.hansolo.fx:countries:21.0.3" />
-      <element id="library" level="project" name="Maven: eu.hansolo.fx:heatmap:21.0.3" />
-      <element id="library" level="project" name="Maven: eu.hansolo:tilesfx:21.0.3" />
-      <element id="library" level="project" name="Maven: eu.hansolo:toolbox:21.0.5" />
-      <element id="library" level="project" name="Maven: eu.hansolo:toolboxfx:21.0.3" />
-      <element id="library" level="project" name="Maven: org.controlsfx:controlsfx:11.2.1" />
-      <element id="library" level="project" name="Maven: org.kordamp.bootstrapfx:bootstrapfx-core:0.4.0" />
-      <element id="library" level="project" name="Maven: org.kordamp.ikonli:ikonli-core:12.3.1" />
-      <element id="library" level="project" name="Maven: org.kordamp.ikonli:ikonli-javafx:12.3.1" />
-      <element id="library" level="project" name="Maven: org.openjfx:javafx-base:17.0.6" />
-      <element id="library" level="project" name="Maven: org.openjfx:javafx-base:win:17.0.6" />
-      <element id="library" level="project" name="Maven: org.openjfx:javafx-controls:17.0.6" />
-      <element id="library" level="project" name="Maven: org.openjfx:javafx-controls:win:17.0.6" />
-      <element id="library" level="project" name="Maven: org.openjfx:javafx-fxml:17.0.6" />
-      <element id="library" level="project" name="Maven: org.openjfx:javafx-fxml:win:17.0.6" />
-      <element id="library" level="project" name="Maven: org.openjfx:javafx-graphics:17.0.6" />
-      <element id="library" level="project" name="Maven: org.openjfx:javafx-graphics:win:17.0.6" />
-      <element id="library" level="project" name="Maven: org.openjfx:javafx-media:17.0.6" />
-      <element id="library" level="project" name="Maven: org.openjfx:javafx-media:win:17.0.6" />
-      <element id="library" level="project" name="Maven: org.openjfx:javafx-swing:17.0.6" />
-      <element id="library" level="project" name="Maven: org.openjfx:javafx-swing:win:17.0.6" />
-      <element id="library" level="project" name="Maven: org.openjfx:javafx-web:17.0.6" />
-      <element id="library" level="project" name="Maven: org.openjfx:javafx-web:win:17.0.6" />
     </root>
   </artifact>
 </component>
