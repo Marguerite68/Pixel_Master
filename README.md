@@ -34,10 +34,8 @@ Pixel Master 是一个轻量级的电子图片管理软件，提供便捷的图�
 
 ## 📦 安装与运行
 
-### **方法 1：使用 JAR 文件**
-1. 下载最新的 `PixelMaster.jar`
-2. 在终端或命令行中运行：
-   ```sh
-   java -jar PixelMaster.jar
+详见Release中提供的压缩包中的内容
 
-This work © 2 by Marguerite68, JosephTrumpBiden, LLLRhys is licensed under CC BY-NC 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc/4.0/
+This work © by [Marguerite68](https://github.com/Marguerite68), [JosephTrumpBiden](https://github.com/JosephTrumpBiden), [LLLRhys](https://github.com/LLLRhys) is licensed under CC BY-NC 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc/4.0/
+
+<img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" style="max-width: 50px;max-height:50px;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" style="max-width: 50px;max-height:50px;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/nc.svg" style="max-width: 50px;max-height:50px;margin-left: .2em;">
